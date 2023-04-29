@@ -23,11 +23,20 @@ nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '
         sh 'docker build -t manjunk/mavenwebapp .'
     }
 
-    stage('Push Image'){
-        withCredentials([usernameColonPassword(credentialsId: 'DOCKER-CREDENTIALS', variable: 'DOCKER-CREDENTIALS')]) {
-            sh 'docker login -u manjunk -p ${DOCKER-CREDENTIALS}'
+    stage('Build and Push Docker Image') {
+      environment {
+        DOCKER_IMAGE = "manjunk/mavenwebapp"
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
+      }
+      steps {
+        script {
+            //sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
+            def dockerImage = docker.image("${DOCKER_IMAGE}")
+            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                dockerImage.push()
+            }
         }
-        sh 'docker push manjunk/mavenwebapp'
+      }
     }
 
     stage('Deploy App'){
