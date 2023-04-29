@@ -4,7 +4,7 @@ node{
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         }
 
-    stage('Clone repo'){
+    stage('Clone Git Repo'){
         git branch: 'main', url: 'https://github.com/ManjuNK/jenkins-maven-web-app-docker'
     }
 
@@ -14,33 +14,26 @@ node{
         sh "${mavenCMD} clean package"
     }
 
-    stage('SonarQube analysis') {
+    stage('SonarQube Code Analysis') {
         withSonarQubeEnv('Sonar-Server-9.4') {
         sh "mvn sonar:sonar"
     }
 
-    stage('Upload Artifcate'){
+    stage('Upload Artificate to Nexus Repo'){
 nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '', file: 'target/01-maven-web-app.war', type: 'war']], credentialsId: 'Nexus-Credentails', groupId: 'in.manju', nexusUrl: '3.64.237.2:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'manju-snapshot-nexus-repo-docker', version: '2.0-SNAPSHOT'     
     }
 
-    stage('Build Image'){
+    stage('Build Docker Image'){
         sh 'docker build -t manjunk/mavenwebapp .'
     }
 
-    stage('Push Image'){
+    stage('Push Docker Image'){
         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) 
         {
         	sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
 
             sh 'docker push manjunk/mavenwebapp'
         }
-    }
-
-    stage('Deploy App'){
-        kubernetesDeploy(
-            configs: 'maven-web-app-deploy.yml',
-            kubeconfigId: 'Kube-Config'
-        )
     }
 }
 }
