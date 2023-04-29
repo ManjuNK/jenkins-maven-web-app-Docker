@@ -41,4 +41,3 @@ nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '
         )
     }
 }
-}
