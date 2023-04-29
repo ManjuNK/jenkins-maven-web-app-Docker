@@ -28,7 +28,7 @@ nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '
     }
 
     stage('Push Image'){
-        withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) 
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) 
         {
         	sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
 
