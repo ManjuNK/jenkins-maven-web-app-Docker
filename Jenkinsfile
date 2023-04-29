@@ -15,24 +15,9 @@ node{
         sh "mvn sonar:sonar"
     }
 
-    stage('upload war to nexus'){
-        steps{
-                nexusArtifactUploader artifacts: [
-                        [
-                                artifactId: '01-maven-web-app',
-                                classifier: '',
-                                file: 'target/01-maven-web-app.war',
-                                type: war
-                        ]
-                ],
-                credentialsId: 'nexus3',
-                groupId: 'in.manju',
-                nexusUrl: '3.64.237.2:8081/',
-                protocol: 'http',
-                repository: 'manju-snapshot-nexus-repo-docker'
-                version: '1.0-SNAPSHOT'
-           }
-       }
+    stage('Upload Artifcate'){
+nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '', file: 'target/01-maven-web-app.war', type: 'war']], credentialsId: 'Nexus-Credentails', groupId: 'in.manju', nexusUrl: '3.64.237.2:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'manju-snapshot-repository', version: '2.0-SNAPSHOT'     
+    }
 
     stage('Build Image'){
         sh 'docker build -t manjunk/mavenwebapp .'
