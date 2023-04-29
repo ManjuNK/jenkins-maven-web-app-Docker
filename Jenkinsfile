@@ -1,4 +1,8 @@
 node{
+    
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        }
 
     stage('Clone repo'){
         git branch: 'main', url: 'https://github.com/ManjuNK/jenkins-maven-web-app-docker'
@@ -24,11 +28,10 @@ nexusArtifactUploader artifacts: [[artifactId: '02-maven-web-app', classifier: '
     }
 
     stage('Push Image'){
-        withCredentials([string(credentialsId: 'DOCKER-CREDENTIALS', variable: 'DOCKER-CREDENTIALS')]) {
-            sh 'docker login -u manjunk -p ${DOCKER-CREDENTIALS}'
-        }
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' 
+
         sh 'docker push manjunk/mavenwebapp'
-    }
+        }
 
     stage('Deploy App'){
         kubernetesDeploy(
