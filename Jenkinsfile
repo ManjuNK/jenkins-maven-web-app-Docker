@@ -31,8 +31,8 @@ node{
                 protocol: 'http',
                 repository: 'manju-snapshot-nexus-repo-docker'
                 version: '1.0-SNAPSHOT'
-        }
-}
+           }
+       }
 
     stage('Build Image'){
         sh 'docker build -t manjunk/mavenwebapp .'
